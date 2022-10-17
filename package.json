@@ -1,0 +1,68 @@
+{
+  "version": "0.2.9",
+  "private": false,
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {
+    "fs": "^0.0.1-security"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "antd-theme-vars",
+  "author": "welliton gervickas",
+  "module": "dist/antd-theme-vars.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/antd-theme-vars.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/antd-theme-vars.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^8.1.0",
+    "husky": "^8.0.1",
+    "size-limit": "^8.1.0",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@rollup/plugin-replace": "^5.0.0",
+    "@types/fs-extra": "^9.0.13",
+    "fs-extra": "^10.1.0",
+    "less-vars-to-js": "^1.3.0"
+  }
+}
