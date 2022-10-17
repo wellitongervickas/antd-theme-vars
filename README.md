@@ -1,6 +1,7 @@
-# AntDesign Theme Vars
+# Antd Theme Vars
 
-This package will scan your theme folder and generate css and theme vars.
+Since Ant Design does not have a way to handle theme switch.
+This package will scan your theme folder and generate css and theme vars to override your less variables.
 
 ## How it works:
 
