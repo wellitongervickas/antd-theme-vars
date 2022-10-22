@@ -1,5 +1,5 @@
 {
-  "version": "0.2.9",
+  "version": "0.3.3",
   "private": false,
   "license": "MIT",
   "main": "dist/index.js",
@@ -8,6 +8,10 @@
     "dist",
     "src"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wellitongervickas/antd-theme-vars.git"
+  },
   "engines": {
     "node": ">=16"
   },

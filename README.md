@@ -64,6 +64,8 @@ Output theme.vars:
 ## Update your next.config.js
 ```js
 const withLess = require('next-with-less')
+
+// only server side
 const { theme } = require('antd-theme-vars')
 
 // ...
@@ -71,7 +73,7 @@ const { theme } = require('antd-theme-vars')
 const nextConfig = {
   // ...
   publicRuntimeConfig: {
-    theme: theme.vars // if you want on client side all variables
+    theme: theme.vars // optionally only if you want to use available vars on client-side.
   },
   // ....
 }
@@ -81,8 +83,10 @@ const nextConfig = {
 module.exports = withLess({
   ...nextConfig,
   lessLoaderOptions: {
+    // it will add your themes by context, eg: .dark { --primary-color: red; } .light { --primary-color: yellow; }
     additionalData: theme.css,
     lessOptions: {
+      // it will modify less vars, eg: { ['primary-color']: '--var(--primary-color)' }
       modifyVars: theme.vars,
       javascriptEnabled: true,
     }
@@ -99,12 +103,6 @@ import getConfig from 'next/config';
 import { ReactNode, useState } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
-export type Theme = {
-  vars: {
-    [key: string]: string
-  }
-}
-
 export interface ThemeProviderProps {
   children: ReactNode
 }
@@ -114,7 +112,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [dark, setIsDark] = useState(false)
 
   return (
-    <StyledThemeProvider theme={publicRuntimeConfig.theme ?? {}}>
+    <StyledThemeProvider theme={publicRuntimeConfig.theme || {}}>
       <div className={dark ? 'dark': 'light'}>
         <button onClick={() => setIsDark(!dark)}>Toggle theme</button>
         {children}
