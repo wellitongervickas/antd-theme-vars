@@ -1,7 +1,6 @@
 # Antd Theme Vars
 
-Since Ant Design does not have a way to handle theme switch.
-This package will scan your theme folder and generate css and theme vars to override your less variables.
+Since Ant Design does not have a way to handle theme switch. This package for next.js will scan your themes folder and generate theme css and vars to override your less variables on build time.
 
 ## How it works:
 
@@ -72,7 +71,7 @@ const { theme } = require('antd-theme-vars')
 const nextConfig = {
   // ...
   publicRuntimeConfig: {
-    theme: theme.vars
+    theme: theme.vars // if you want on client side all variables
   },
   // ....
 }
@@ -93,7 +92,7 @@ module.exports = withLess({
 ...
 ```
 
-## Create your theme switcher with Styled Components
+## Create your theme switcher with Styled Components using client side vars
 **example**: src/themes/Theme.tsx
 ```jsx
 import getConfig from 'next/config';
