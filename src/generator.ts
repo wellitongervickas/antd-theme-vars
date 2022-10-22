@@ -1,76 +1,53 @@
-import path from 'path'
-import fs from 'fs-extra'
+import Config from './config'
+import Utils from './utils'
 
 // @ts-ignore
 import lessToJs from 'less-vars-to-js'
 
-type _GeneralObject<T>  = {
-  [key: string]: T
-}
-
-type Setup = {
-  themesPath: string
-}
-
 export default class ThemeGenerator {
-  themes: _GeneralObject<_GeneralObject<string>> = {}
+  themes: Library.Themes = {}
 
   constructor() {
     this._installThemes()
   }  
 
   _installThemes() {
-    const setup = this._getSetupFile()
-    const { themesFiles, themesPath } = this._getThemesFolder(setup)
+    const config = this._config
+    const themeFiles = Utils.readDir(config.themesPath)
 
-    themesFiles.forEach((file: string) =>{
+    themeFiles.forEach((file: string) =>{
       if (!file.match('.less')) {
         return;
       }
 
-      const name = path.parse(file).name;
-      const themePath  = path.join(`${themesPath}/${file}`);
-      const themeData = fs.readFileSync(themePath, 'utf8')
+      const fileMetadata = Utils.fileMetadata(file);
+      const name = fileMetadata.name
+      const themeFile = Utils.readFile([config.themesPath, fileMetadata.base].join('/'))
 
-      this.themes[name] = this._getThemeVars(themeData)
+      this.themes[name] = this._getThemeVars(themeFile)
     });
   }
 
-  _getSetupFile(): Setup {
-    const setupFile = path.join(__dirname, '../../../theme.config.json');
-    if (!setupFile) {
-      throw Error('setup file not found')
-    }
+  get _config(): Library.Config {
+    const configFile = Utils.readFile(Config.configPath)
+    const configOptions = Utils.fileToJson<Library.Config>(configFile);
+    const config = new Config(configOptions)
 
-    const setupData = fs.readFileSync(setupFile, 'utf8')
-    const setup = JSON.parse(setupData);
-
-    return setup;
-  }
-
-  _getThemesFolder(setup: Setup) {
-    const themesPath = path.join(__dirname, `../../../${setup.themesPath}`);
-    const themesFiles = fs.readdirSync(themesPath)
-
-    if (!themesFiles) {
-      throw Error('themes not found')
-    }
-
-    return { themesFiles, themesPath }
+    return config;
   }
 
   _getThemeVars(themeData: string) {
     return lessToJs(themeData, { resolveVariables: true, stripPrefix: true })
   }
-  
-  get vars(): _GeneralObject<string> {
-    return this.keys.reduce((vars, key) => Object.assign(vars, {
+
+  get vars(): Library.Vars {
+    return this._keys.reduce((vars, key) => Object.assign(vars, {
       [key]: `var(--${key})`
     })
     , {})
   }
 
-  get keys(): string[] {
+  get _keys() {
     return Object.keys(Object.keys(this.themes).reduce((setKeys, key) => {
       return {
         ...setKeys,
@@ -78,21 +55,18 @@ export default class ThemeGenerator {
       }
     }, {}))
   }
-  
+
   get css() {
     return Object.keys(this.themes).reduce((data, key) => {
       return [data, this._themeVarsToCssVars(key, this.themes[key])].join('');
     }, '')
   }
   
-  _themeVarsToCssVars(themeName: string, theme: _GeneralObject<string>) {
-    return `
-    .${themeName} {
-      ${Object.keys(theme).reduce((vars, key) => vars.concat(`--${key}: ${theme[key]};`), '')}
-    }
-    `
+  _themeVarsToCssVars(themeName: string, theme: Library.Theme) {
+    return `.${themeName}{${Object.keys(theme).reduce((vars, key) => vars.concat(`--${key}: ${theme[key]};`), '')}}`
   }
 }
 
 export { ThemeGenerator }
+
 
